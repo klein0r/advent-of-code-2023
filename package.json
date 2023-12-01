@@ -2,10 +2,18 @@
   "name": "advent-of-code",
   "version": "0.0.1",
   "description": "",
+  "author": {
+    "name": "Matthias Kleine",
+    "email": "info@haus-automatisierung.com"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {},
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Matthias Kleine",
-  "license": "MIT"
+  "license": "MIT",
+  "readmeFilename": "README.md"
 }
