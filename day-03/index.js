@@ -2,24 +2,9 @@
 
 const fs = require('node:fs');
 
-const text = String(fs.readFileSync('./day-03.txt'));
+const input = process.argv.length > 2 && process.argv[2] === 'ex' ? 'example' : 'input';
+const text = String(fs.readFileSync(`./${input}.txt`));
 let rows = text.split('\n');
-
-// testRows
-/*
-rows = [
-    '467..114..',
-    '...*......',
-    '..35..633.',
-    '......#...',
-    '617*......',
-    '.....+.58.',
-    '..592.....',
-    '......755.',
-    '...$.*....',
-    '.664.598..',
-];
-*/
 
 function symbolInAreaOfNumber(s, n) {
     return n.area.rows.includes(s.row) && n.area.start <= s.index && n.area.end >= s.index;
@@ -33,7 +18,7 @@ for (let r = 0; r < rows.length; r++) {
     while ((match = nmbrRegex.exec(rows[r])) != null) {
         const numberIndex = match.index;
         const length = match[0].length;
-        console.log(`Number in row ${r + 1} @ position ${numberIndex}: ${match[0]} (${length} digits)`);
+        // console.log(`Number in row ${r + 1} @ position ${numberIndex}: ${match[0]} (${length} digits)`);
 
         matchedNumbers.push({
             valid: false,
@@ -61,7 +46,7 @@ for (let r = 0; r < rows.length; r++) {
     let match = null;
     while ((match = symbolRexexp.exec(rows[r])) != null) {
         const symbolIndex = match.index;
-        console.log(`Symbol in row ${r + 1} @ position ${symbolIndex}: ${match[0]}`);
+        // console.log(`Symbol in row ${r + 1} @ position ${symbolIndex}: ${match[0]}`);
 
         matchedSymbols.push({
             value: match[0],
@@ -77,7 +62,7 @@ for (let r = 0; r < rows.length; r++) {
 for (const n of matchedNumbers) {
     for (const s of matchedSymbols) {
         if (symbolInAreaOfNumber(s, n)) {
-            console.log(`${n.value} (row ${n.area.row + 1}) is valid by sybol ${s.value} in row ${s.row + 1}`);
+            // console.log(`${n.value} (row ${n.area.row + 1}) is valid by sybol ${s.value} in row ${s.row + 1}`);
             n.valid = true;
         }
     }

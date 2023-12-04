@@ -2,19 +2,9 @@
 
 const fs = require('node:fs');
 
-const text = String(fs.readFileSync('./day-02.txt'));
+const input = process.argv.length > 2 && process.argv[2] === 'ex' ? 'example' : 'input';
+const text = String(fs.readFileSync(`./${input}.txt`));
 let games = text.split('\n');
-
-// testGames
-/*
-games = [
-    'Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green',
-    'Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue',
-    'Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red',
-    'Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red',
-    'Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green',
-];
-*/
 
 function validGame(rounds) {
     // possible games: 12 red cubes, 13 green cubes, and 14 blue cubes
@@ -80,9 +70,7 @@ for (const game of games) {
 }
 
 console.log('Round 1:');
-console.log(result1.length);
 console.log(result1.reduce((acc, c) => acc + c, 0));
 
 console.log('Round 2:');
-console.log(result2.length);
 console.log(result2.reduce((acc, c) => acc + c, 0));
