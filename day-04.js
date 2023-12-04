@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('node:fs');
-const { exit } = require('node:process');
 
 const text = String(fs.readFileSync('./day-04.txt'));
 let rows = text.split('\n');

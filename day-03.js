@@ -5,11 +5,6 @@ const fs = require('node:fs');
 const text = String(fs.readFileSync('./day-03.txt'));
 let rows = text.split('\n');
 
-/*
-Part 1 Sum: 532428
-Part 2 Sum: 84051670
-*/
-
 // testRows
 /*
 rows = [
