@@ -5,12 +5,21 @@ const fs = require('node:fs');
 const input = process.argv.length > 2 && process.argv[2] === 'ex' ? 'example' : 'input';
 const text = String(fs.readFileSync(`./${input}.txt`));
 
-function getHandValue(row, origRow, values) {
+function getHandTotal(row, values) {
     const hand = row.match(/^([AKQJT2-9]){5}/)[0].split('');
-    const origHand = origRow.match(/^([AKQJT2-9]){5}/)[0].split('');
+
+    let totalValue = 0;
+    for (let pos = 0; pos < 5; pos++) {
+        totalValue += (values[hand[pos]] << 4 * (4 - pos));
+    }
+
+    return totalValue;
+}
+
+function getHandValue(row, values) {
+    const hand = row.match(/^([AKQJT2-9]){5}/)[0].split('');
     const twoPairs = [];
     const value = {
-        totalValue: 0,
         highCard: 0,
         onePair: 0,
         twoPair: 0,
@@ -19,10 +28,6 @@ function getHandValue(row, origRow, values) {
         fourOfKind: 0,
         fiveOfKind: 0,
     };
-
-    for (let pos = 0; pos < 5; pos++) {
-        value.totalValue += (values[origHand[pos]] << 4 * (4 - pos));
-    }
 
     for (const [card, val] of Object.entries(values)) {
         const sameKind = hand.filter(c => c === card).length;
@@ -49,7 +54,11 @@ function getHandValue(row, origRow, values) {
     }
 
     if (twoPairs.length >= 2) {
-        value.twoPair = twoPairs.sort((a, b) => b - a).slice(0, 2).reduce((acc, c) => acc + c, 0);
+        // sum of two highest pair values
+        value.twoPair = twoPairs
+            .sort((a, b) => b - a)
+            .slice(0, 2)
+            .reduce((acc, c) => acc + c, 0);
     }
 
     if (value.onePair > 0 && value.threeOfKind > 0) {
@@ -58,17 +67,13 @@ function getHandValue(row, origRow, values) {
 
     // five four full thre two one high
     //    0    0    0    0   0   0  000
-    value.calculated = value.highCard
+    return value.highCard
         + ((value.onePair > 0 ? 1 : 0) << 3)
         + ((value.twoPair > 0 ? 1 : 0) << 4)
         + ((value.threeOfKind > 0 ? 1 : 0) << 5)
         + ((value.fullHouse > 0 ? 1 : 0) << 6)
         + ((value.fourOfKind > 0 ? 1 : 0) << 7)
         + ((value.fiveOfKind > 0 ? 1 : 0) << 8);
-
-    // console.log(`${value.calculated.toString(2)} = ${value.calculated} (${row}) ${JSON.stringify(value)}`);
-
-    return value;
 }
 
 // Round 1
@@ -90,13 +95,16 @@ const values1 = {
 
 const rows1 = text.split('\n')
     .sort((a, b) => {
-        const cA = getHandValue(a, a, values1);
-        const cB = getHandValue(b, b, values1);
+        const vA = getHandValue(a, values1);
+        const vB = getHandValue(b, values1);
 
-        if (cA.calculated === cB.calculated) {
-            return cA.totalValue - cB.totalValue;
+        if (vA === vB) {
+            const tA = getHandTotal(a, values1);
+            const tB = getHandTotal(b, values1);
+
+            return tA - tB;
         } else {
-            return cA.calculated - cB.calculated;
+            return vA - vB;
         }
     });
 
@@ -125,12 +133,12 @@ const values2 = {
     'A': 0xE,
 };
 
-function getHighestScore(row, values) {
-    let highscore = getHandValue(row, row, values);
+function getHighestHandValue(row, values) {
+    let highscore = getHandValue(row, values);
     for (const joker of ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A']) {
         const newRow = row.replaceAll('J', joker);
-        const score = getHandValue(newRow, row, values);
-        if (score.calculated > highscore.calculated) {
+        const score = getHandValue(newRow, values);
+        if (score > highscore) {
             highscore = score;
         }
     }
@@ -140,13 +148,16 @@ function getHighestScore(row, values) {
 
 const rows2 = text.split('\n')
     .sort((a, b) => {
-        const cA = getHighestScore(a, values2);
-        const cB = getHighestScore(b, values2);
+        const vA = getHighestHandValue(a, values2);
+        const vB = getHighestHandValue(b, values2);
 
-        if (cA.calculated === cB.calculated) {
-            return cA.totalValue - cB.totalValue;
+        if (vA === vB) {
+            const tA = getHandTotal(a, values2);
+            const tB = getHandTotal(b, values2);
+
+            return tA - tB;
         } else {
-            return cA.calculated - cB.calculated;
+            return vA - vB;
         }
     });
 
