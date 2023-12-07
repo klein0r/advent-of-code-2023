@@ -8,3 +8,4 @@ Just sharing my [Advent of code](https://adventofcode.com) solutions using NodeJ
 - [Day 04](./day-04/index.js)
 - [Day 05](./day-05/index.js)
 - [Day 06](./day-06/index.js)
+- [Day 07](./day-07/index.js)
