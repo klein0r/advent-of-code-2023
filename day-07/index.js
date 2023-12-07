@@ -18,62 +18,44 @@ function getHandTotal(row, values) {
 
 function getHandValue(row, values) {
     const hand = row.match(/^([AKQJT2-9]){5}/)[0].split('');
-    const twoPairs = [];
-    const value = {
-        highCard: 0,
-        onePair: 0,
-        twoPair: 0,
-        threeOfKind: 0,
-        fullHouse: 0,
-        fourOfKind: 0,
-        fiveOfKind: 0,
-    };
+    let high = 0;
+    let pairs = 0;
+
+    // five four full thre two one high
+    //    0    0    0    0   0   0  000
+    let value = 0b000000000;
 
     for (const [card, val] of Object.entries(values)) {
         const sameKind = hand.filter(c => c === card).length;
 
-        if (sameKind === 5 && value.fiveOfKind < val) {
-            value.fiveOfKind = val;
-        } else if (sameKind === 4 && value.fourOfKind < val) {
-            value.fourOfKind = val;
-        } else if (sameKind === 3 && value.threeOfKind < val) {
-            value.threeOfKind = val;
-        } else if (sameKind === 2 && value.onePair < val) {
-            value.onePair = val;
-        }
-
-        // Two pair
-        if (sameKind === 2) {
-            twoPairs.push(val);
+        if (sameKind === 5) {
+            value |= 0b100000000;
+        } else if (sameKind === 4) {
+            value |= 0b010000000;
+        } else if (sameKind === 3) {
+            value |= 0b000100000;
+        } else if (sameKind === 2) {
+            value |= 0b000001000;
+            pairs++;
         }
 
         // high card
-        if (value.highCard < val) {
-            value.highCard = val;
+        if (high < val) {
+            high = val;
         }
     }
 
-    if (twoPairs.length >= 2) {
-        // sum of two highest pair values
-        value.twoPair = twoPairs
-            .sort((a, b) => b - a)
-            .slice(0, 2)
-            .reduce((acc, c) => acc + c, 0);
+    value |= (0b111 & high);
+
+    if (pairs == 2) {
+        value |= 0b000010000;
     }
 
-    if (value.onePair > 0 && value.threeOfKind > 0) {
-        value.fullHouse = value.onePair + value.threeOfKind;
+    if (value.onePair && value.threeOfKind) {
+        value |= 0b001000000;
     }
 
-    // five four full thre two one high
-    //    0    0    0    0   0   0  000
-    return value.highCard
-        + ((value.onePair > 0 ? 1 : 0) << 3)
-        + ((value.twoPair > 0 ? 1 : 0) << 4)
-        + ((value.threeOfKind > 0 ? 1 : 0) << 5)
-        + ((value.fullHouse > 0 ? 1 : 0) << 6)
-        + ((value.fourOfKind > 0 ? 1 : 0) << 7)
-        + ((value.fiveOfKind > 0 ? 1 : 0) << 8);
+    return value;
 }
 
 // Round 1
