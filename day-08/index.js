@@ -14,7 +14,7 @@ for (let r = 2; r < rows.length; r++) {
     nodes[id] = {L, R};
 }
 
-function runsTo(start, ending) {
+function runsTo(start, endings) {
     let d = 0;
     let pos = start;
     let runs = 0;
@@ -24,14 +24,14 @@ function runsTo(start, ending) {
 
         pos = nodes?.[pos]?.[dirs[d++]];
         runs++;
-    } while (pos && !pos.endsWith(ending));
+    } while (pos && !endings.includes(pos));
 
     return runs;
 }
 
 // Round 1
 console.log('Round 1:');
-console.log(runsTo('AAA', 'ZZZ'));
+console.log(runsTo('AAA', ['ZZZ']));
 
 // Round 2
 /*
@@ -60,33 +60,21 @@ do {
 } while (ghostNodes.filter(n => n.endsWith('Z')).length !== ghostNodes.length);
 */
 
-function traverse(node, endings) {
-    let steps = 0;
-    let d = 0;
-    let pos = node;
-
-    while (!endings.includes(pos)) {
-        if (d === dirs.length) d = 0;
-
-        pos = nodes[pos][dirs[d++]];
-        steps++;
-    }
-
-    return steps;
-}
-
 const startNodes = Object.keys(nodes).filter((n) => n.endsWith('A'));
 const endNodes = Object.keys(nodes).filter((n) => n.endsWith('Z'));
 
-function leastCommonMultiple(nums) {
+function leastCommonMultiple(runs) {
     const ggT = (a, b) => (!b ? a : ggT(b, a % b));
     const kgV = (a, b) => (a * b) / ggT(a, b);
 
-    return nums.reduce((multiple, num) => kgV(multiple, num), Math.min(...nums));
+    return runs.reduce(
+        (multiple, num) => kgV(multiple, num),
+        Math.min(...runs) // start with min values
+    );
 }
 
-const endingSteps = startNodes.map((n) => traverse(n, endNodes));
-const result2 = leastCommonMultiple(endingSteps);
+const runsToEnd = startNodes.map((n) => runsTo(n, endNodes));
+const result2 = leastCommonMultiple(runsToEnd);
 
 console.log('Round 2:');
 console.log(result2);
