@@ -9,10 +9,7 @@ function getHandTotal(row, values) {
     const hand = row.match(/^([AKQJT2-9]){5}/)[0].split('');
 
     let totalValue = 0;
-    for (let pos = 0; pos < 5; pos++) {
-        totalValue += (values[hand[pos]] << 4 * (4 - pos));
-    }
-
+    for (let pos = 0; pos < 5; pos++) totalValue += (values.indexOf(hand[pos]) << 4 * (4 - pos));
     return totalValue;
 }
 
@@ -25,55 +22,29 @@ function getHandValue(row, values) {
     //    0    0    0    0   0   0  000
     let value = 0b000000000;
 
-    for (const [card, val] of Object.entries(values)) {
-        const sameKind = hand.filter(c => c === card).length;
+    for (let i = 0; i < values.length; i++) {
+        const sameKind = hand.filter(c => c === values[i]).length;
+        if (high < i) high = i;
 
-        if (sameKind === 5) {
-            value |= 0b100000000;
-        } else if (sameKind === 4) {
-            value |= 0b010000000;
-        } else if (sameKind === 3) {
-            value |= 0b000100000;
-        } else if (sameKind === 2) {
+        if (sameKind === 5) value |= 0b100000000;
+        else if (sameKind === 4) value |= 0b010000000;
+        else if (sameKind === 3) value |= 0b000100000;
+        else if (sameKind === 2) {
             value |= 0b000001000;
             pairs++;
-        }
-
-        // high card
-        if (high < val) {
-            high = val;
         }
     }
 
     value |= (0b111 & high);
 
-    if (pairs == 2) {
-        value |= 0b000010000;
-    }
-
-    if (value.onePair && value.threeOfKind) {
-        value |= 0b001000000;
-    }
+    if (pairs == 2) value |= 0b000010000;
+    if (value.onePair && value.threeOfKind) value |= 0b001000000;
 
     return value;
 }
 
 // Round 1
-const values1 = {
-    '2': 0x2,
-    '3': 0x3,
-    '4': 0x4,
-    '5': 0x5,
-    '6': 0x6,
-    '7': 0x7,
-    '8': 0x8,
-    '9': 0x9,
-    'T': 0xA,
-    'J': 0xB,
-    'Q': 0xC,
-    'K': 0xD,
-    'A': 0xE,
-};
+const values1 = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
 
 const rows1 = text.split('\n')
     .sort((a, b) => {
@@ -99,21 +70,7 @@ console.log('Round 1:');
 console.log(result1);
 
 // Round 2
-const values2 = {
-    'J': 0x1,
-    '2': 0x2,
-    '3': 0x3,
-    '4': 0x4,
-    '5': 0x5,
-    '6': 0x6,
-    '7': 0x7,
-    '8': 0x8,
-    '9': 0x9,
-    'T': 0xA,
-    'Q': 0xC,
-    'K': 0xD,
-    'A': 0xE,
-};
+const values2 = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
 
 function getHighestHandValue(row, values) {
     let highscore = getHandValue(row, values);
