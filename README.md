@@ -9,3 +9,5 @@ Just sharing my [Advent of code](https://adventofcode.com) solutions using NodeJ
 - [Day 05](./day-05/index.js)
 - [Day 06](./day-06/index.js)
 - [Day 07](./day-07/index.js)
+- [Day 08](./day-08/index.js)
+- [Day 09](./day-09/index.js)
